@@ -14,11 +14,45 @@ That being said, instead of using the classic `set path+=**` hack to allow VIM t
 2. Read `.gitignore` from root git directory
 3. Only add directories and files that are not present in the `.gitignore`
 
-### Notes
+#### Notes
 
 -   If not in a git project, it'll add all files and directories from the current location, but not using `**`
 -   Deeply nested `.gitignore` are simply ignored
 -   The classic `!` char is also ignored (otherwise some heavy logic would be required)
+
+## Install
+
+Any plugin manager should work (at least the ones that fetch data from GitHub). Below are a few ways you can do it.
+
+#### VIM's 8+ package manager
+
+In the terminal
+
+```bash
+git clone https://github.com/Guergeiro/clean-path.vim.git ~/.vim/pack/vendor/start/clean-path.vim
+```
+
+In your `.vimrc`
+
+```vim
+packloadall
+```
+
+#### [Vundle.vim](https://github.com/VundleVim/Vundle.vim)
+
+```vim
+call vundle#begin()
+Plugin 'Guergeiro/clean-path.vim'
+call vundle#end()
+```
+
+#### [vim-plug](https://github.com/junegunn/vim-plug)
+
+```vim
+call plug#begin()
+Plug 'Guergeiro/clean-path.vim'
+call plug#end()
+```
 
 ## Credit
 
@@ -30,4 +64,4 @@ Thanks to [romainl](https://github.com/romainl) for helping me understanding a b
 
 ## License
 
-This plugin was released under the [MIT License](./LICENSE)
+This plugin was released under the [MIT License](./LICENSE).
