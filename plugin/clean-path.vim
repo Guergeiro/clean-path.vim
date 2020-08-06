@@ -62,6 +62,8 @@ function! s:SetPathFromGit() abort
     if stridx(gitDir, "fatal") == -1
         " In Git Dir
         let ignored .= s:WildignoreString(gitDir)
+    else
+        let gitDir = getcwd()
     endif
 
     let l:findString = "find " . gitDir . " -maxdepth 1"
@@ -90,5 +92,6 @@ endfunction
 if exists("g:clean_path")
     finish
 endif
+set path-=**
 call s:SetPathFromGit()
 let g:clean_path = 1
