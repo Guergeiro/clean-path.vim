@@ -16,7 +16,8 @@ That being said, instead of using the classic `set path+=**` hack to allow VIM t
 
 #### Notes
 
--   If not in a git project, it'll add all files and directories from the current location, but not using `**`
+-   If not in a git project, it'll simply use the the current directory `.gitignore`
+-   If no `.gitignore` is available, it'll populate the `&path` but not using `**`
 -   Deeply nested `.gitignore` are simply ignored
 -   The classic `!` char is also ignored (otherwise some heavy logic would be required)
 
