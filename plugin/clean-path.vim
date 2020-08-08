@@ -60,7 +60,8 @@ function! s:SetPathFromGit() abort
     let curDir = getcwd()
 
     let ignored = ""
-    if stridx(curDir, gitDir) != -1
+    echo gitDir
+    if gitDir != ""
         " In Git Dir
         let ignored .= s:WildignoreString(gitDir)
     else
@@ -71,7 +72,7 @@ function! s:SetPathFromGit() abort
     let l:findString = "find " . gitDir . " -maxdepth 1"
 
     " Finds directories
-    let l:dirs = filter(systemlist(l:findString . " -type d"), {_,dir ->
+    let l:dirs = filter(systemlist(l:findString . " -type d -not -path " . gitDir), {_,dir ->
                 \ !empty(dir) && empty(filter(split(ignored, ','), {_,v -> v =~? dir[2:]}))
                 \ })
 
