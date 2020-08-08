@@ -33,8 +33,8 @@ function! s:BuildString(line) abort
     return a:line
 endfunction
 
-function! s:WildignoreString(gitPath) abort
-    let gitignore = a:gitPath . "/.gitignore"
+function! s:WildignoreString(dirPath) abort
+    let gitignore = a:dirPath . "/.gitignore"
     if !filereadable(gitignore)
         return ""
     endif
@@ -48,7 +48,7 @@ function! s:WildignoreString(gitPath) abort
         if line =~ '^!'   | con | endif
         if line =~ '^\s$' | con | endif
 
-        let igstring .= "," . a:gitPath . "/" . s:BuildString(line)
+        let igstring .= "," . a:dirPath . "/" . s:BuildString(line)
     endfor
 
     return substitute(igstring, '^,', '', "g")
@@ -57,19 +57,21 @@ endfunction
 function! s:SetPathFromGit() abort
     let gitDir = system("git rev-parse --show-toplevel")
     let gitDir = substitute(gitDir, "\n", "", "g")
+    let curDir = getcwd()
 
     let ignored = ""
-    if stridx(gitDir, "fatal") == -1
+    if gitDir != ""
         " In Git Dir
         let ignored .= s:WildignoreString(gitDir)
     else
-        let gitDir = getcwd()
+        let gitDir = curDir
+        let ignored .= s:WildignoreString(gitDir)
     endif
 
     let l:findString = "find " . gitDir . " -maxdepth 1"
 
     " Finds directories
-    let l:dirs = filter(systemlist(l:findString . " -type d"), {_,dir ->
+    let l:dirs = filter(systemlist(l:findString . " -type d -not -path " . gitDir), {_,dir ->
                 \ !empty(dir) && empty(filter(split(ignored, ','), {_,v -> v =~? dir[2:]}))
                 \ })
 

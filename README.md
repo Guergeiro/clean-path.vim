@@ -16,8 +16,9 @@ That being said, instead of using the classic `set path+=**` hack to allow VIM t
 
 #### Notes
 
--   If not in a git project, it'll add all files and directories from the current location, but not using `**`
--   Deeply nested `.gitignore` are simply ignored
+-   If not in a git project, it'll simply use the the current directory `.gitignore`
+-   If no `.gitignore` is available, it'll populate the `&path` but not using `**`
+-   Deeply nested `.gitignore` in a git project are simply ignored
 -   The classic `!` char is also ignored (otherwise some heavy logic would be required)
 
 ## Install
@@ -41,7 +42,8 @@ packloadall
 #### [Vundle.vim](https://github.com/VundleVim/Vundle.vim)
 
 ```vim
-call vundle#begin()
+call vundle#begin('~/.vim/plugged')
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'Guergeiro/clean-path.vim'
 call vundle#end()
 ```
@@ -49,7 +51,7 @@ call vundle#end()
 #### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-call plug#begin()
+call plug#begin('~/.vim/plugged')
 Plug 'Guergeiro/clean-path.vim'
 call plug#end()
 ```
