@@ -60,7 +60,6 @@ function! s:SetPathFromGit() abort
     let curDir = getcwd()
 
     let ignored = ""
-    echo gitDir
     if gitDir != ""
         " In Git Dir
         let ignored .= s:WildignoreString(gitDir)
