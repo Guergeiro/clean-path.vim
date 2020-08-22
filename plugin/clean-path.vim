@@ -21,7 +21,11 @@
 "         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 "         SOFTWARE.
 
-function! s:BuildString(line) abort
+if exists("g:clean_path")
+    finish
+endif
+
+function! s:CleanString(line) abort
     " If line starts with a '/', remove it
     if a:line =~ '^/'
         let a:line = substitute(a:line, '/', '', '')
@@ -48,52 +52,74 @@ function! s:WildignoreString(dirPath) abort
         if line =~ '^!'   | con | endif
         if line =~ '^\s$' | con | endif
 
-        let igstring .= "," . a:dirPath . "/" . s:BuildString(line)
+        let igstring .= "," . a:dirPath . "/" . s:CleanString(line)
     endfor
 
     return substitute(igstring, '^,', '', "g")
 endfunction
 
-function! s:SetPathFromGit() abort
-    let gitDir = system("git rev-parse --show-toplevel")
-    let gitDir = substitute(gitDir, "\n", "", "g")
-    let curDir = getcwd()
-
-    let ignored = ""
-    if gitDir != ""
-        " In Git Dir
-        let ignored .= s:WildignoreString(gitDir)
-    else
-        let gitDir = curDir
-        let ignored .= s:WildignoreString(gitDir)
-    endif
-
-    let l:findString = "find " . gitDir . " -maxdepth 1"
-
-    " Finds directories
-    let l:dirs = filter(systemlist(l:findString . " -type d -not -path " . gitDir), {_,dir ->
-                \ !empty(dir) && empty(filter(split(ignored, ','), {_,v -> v =~? dir[2:]}))
-                \ })
-
+function! s:AddFilesToPath(findString) abort
     " Finds files
-    let l:files = filter(systemlist(l:findString . " -type f"), {_,dir ->
-                \ !empty(dir) && empty(filter(split(ignored, ','), {_,v -> v =~? dir[2:]}))
+    let l:files = filter(systemlist(a:findString), {_,dir ->
+                \ !empty(dir) && empty(filter(split(&wildignore, ','), {_,v -> v =~? dir[0:]}))
+                \ })
+    if !empty(l:files)
+        " Append files to path
+        if &path == ""
+            let &path = ".,,"
+        endif
+        let &path .= join(map(l:files, 'v:val[0:]'), ',')
+    endif
+endfunction
+
+function! s:AddDirectoriesToPath(findString) abort
+    " Finds directories
+    let l:dirs = filter(systemlist(a:findString), {_,dir ->
+                \ !empty(dir) && empty(filter(split(&wildignore, ','), {_,v -> v =~? dir[0:]}))
                 \ })
 
     if !empty(l:dirs)
         " Append directories to path
-        let &path = &path.','.join(map(l:dirs, 'v:val[0:]."/**"'), ',')
+        if &path == ""
+            let &path = ".,,"
+        endif
+        let &path .= join(map(l:dirs, 'v:val[0:]."/**"'), ',')
     endif
-    if !empty(l:files)
-        " Append files to path
-        let &path = &path.','.join(map(l:files, 'v:val[0:]'), ',')
-    endif
-
 endfunction
 
-if exists("g:clean_path")
-    finish
-endif
-set path-=**
-call s:SetPathFromGit()
+function! s:AddIgnoredToWildignore(ignored) abort
+    if a:ignored != ""
+        if &wildignore != ""
+            let &wildignore .= ","
+        endif
+        let &wildignore .= a:ignored
+    endif
+endfunction
+
+function! s:SetPath() abort
+    let gitDir = system("git rev-parse --show-toplevel")
+    let gitDir = substitute(gitDir, "\n", "", "g")
+
+    if gitDir != ""
+        " In Git Dir
+        let ignored = s:WildignoreString(gitDir)
+        call s:AddIgnoredToWildignore(ignored)
+
+        let l:findString = "find " . gitDir . " -maxdepth 1"
+        call s:AddFilesToPath(findString . " -type f")
+        call s:AddDirectoriesToPath(findString . " -type d -not -path " . gitDir)
+        return
+    endif
+    let curDir = getcwd()
+
+    let ignored = s:WildignoreString(curDir)
+    call s:AddIgnoredToWildignore(ignored)
+
+    let l:findString = "find " . curDir . " -maxdepth 1"
+    call s:AddFilesToPath(findString . " -type f")
+    call s:AddDirectoriesToPath(findString . " -type d -not -path " . curDir)
+endfunction
+
+set path=
+call s:SetPath()
 let g:clean_path = 1
