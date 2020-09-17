@@ -37,39 +37,25 @@ function! s:CleanString(line) abort
     return a:line
 endfunction
 
-function! s:WildignoreString(dirPath) abort
-    let gitignore = a:dirPath . "/.gitignore"
-    if !filereadable(gitignore)
+function! s:IgnoreString(dirPath) abort
+    let l:gitignore = a:dirPath . "/.gitignore"
+    if !filereadable(l:gitignore)
         return ""
     endif
 
-    let igstring = ""
-    for oline in readfile(gitignore)
+    let l:igstring = ""
+    for oline in readfile(l:gitignore)
 
-        let line = substitute(oline, '\s|\n|\r', '', "g")
+        let l:line = substitute(oline, '\s|\n|\r', '', "g")
         if line =~ '^#'   | con | endif
         if line == ''     | con | endif
         if line =~ '^!'   | con | endif
         if line =~ '^\s$' | con | endif
 
-        let igstring .= "," . a:dirPath . "/" . s:CleanString(line)
+        let l:igstring .= "," . a:dirPath . "/" . s:CleanString(l:line)
     endfor
 
-    return substitute(igstring, '^,', '', "g")
-endfunction
-
-function! s:AddFilesToPath(findString) abort
-    " Finds files
-    let l:files = filter(systemlist(a:findString), {_,dir ->
-                \ !empty(dir) && empty(filter(split(&wildignore, ','), {_,v -> v =~? dir[0:]}))
-                \ })
-    if !empty(l:files)
-        " Append files to path
-        if &path == ""
-            let &path = ".,,"
-        endif
-        let &path .= join(map(l:files, 'v:val[0:]'), ',')
-    endif
+    return substitute(l:igstring, '^,', '', "g")
 endfunction
 
 function! s:AddDirectoriesToPath(findString) abort
@@ -78,13 +64,11 @@ function! s:AddDirectoriesToPath(findString) abort
                 \ !empty(dir) && empty(filter(split(&wildignore, ','), {_,v -> v =~? dir[0:]}))
                 \ })
 
-    if !empty(l:dirs)
-        " Append directories to path
-        if &path == ""
-            let &path = ".,,"
-        endif
-        let &path .= join(map(l:dirs, 'v:val[0:]."/**"'), ',')
+    if empty(l:dirs)
+        return ""
     endif
+    " Append directories to path
+    let &path .= join(map(l:dirs, 'v:val[0:]."/**"'), ',')
 endfunction
 
 function! s:AddIgnoredToWildignore(ignored) abort
@@ -96,30 +80,34 @@ function! s:AddIgnoredToWildignore(ignored) abort
     endif
 endfunction
 
-function! s:SetPath() abort
-    let gitDir = system("git rev-parse --show-toplevel")
-    let gitDir = substitute(gitDir, "\n", "", "g")
-
-    if gitDir != ""
-        " In Git Dir
-        let ignored = s:WildignoreString(gitDir)
-        call s:AddIgnoredToWildignore(ignored)
-
-        let l:findString = "find " . gitDir . " -maxdepth 1"
-        call s:AddFilesToPath(findString . " -type f")
-        call s:AddDirectoriesToPath(findString . " -type d -not -path " . gitDir)
-        return
-    endif
-    let curDir = getcwd()
-
-    let ignored = s:WildignoreString(curDir)
-    call s:AddIgnoredToWildignore(ignored)
-
-    let l:findString = "find " . curDir . " -maxdepth 1"
-    call s:AddFilesToPath(findString . " -type f")
-    call s:AddDirectoriesToPath(findString . " -type d -not -path " . curDir)
+function! s:RemoveIgnoredFromWildignore(originalWildignore) abort
+    let &wildignore = a:originalWildignore
 endfunction
 
-set path=
+
+function! s:SetPath() abort
+    let l:gitDir = system("git rev-parse --show-toplevel")
+    let l:gitDir = substitute(l:gitDir, "\n", "", "g")
+    let l:originalWildignore = &wildignore
+
+    if (l:gitDir != "")
+        let l:ignored = s:IgnoreString(l:gitDir)
+        call s:AddIgnoredToWildignore(l:ignored)
+
+        let l:findString = "find " . l:gitDir . " -maxdepth 1 -type d -not -path " . l:gitDir
+        call s:AddDirectoriesToPath(l:findString)
+    else
+        let l:curDir = getcwd()
+        let l:ignored = s:IgnoreString(l:gitDir)
+        call s:AddIgnoredToWildignore(l:ignored)
+
+        let l:findString = "find " . l:curDir . " -maxdepth 1 -type d -not -path " . l:curDir
+        call s:AddDirectoriesToPath(l:findString)
+    endif
+    if (!exists("g:clean_path_wildignore"))
+        call s:RemoveIgnoredFromWildignore(l:originalWildignore)
+    endif
+endfunction
+
 call s:SetPath()
 let g:clean_path = 1

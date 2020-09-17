@@ -56,6 +56,13 @@ Plug 'Guergeiro/clean-path.vim'
 call plug#end()
 ```
 
+## Available Configurations
+
+```vim
+" Automatically adds the .gitginore to &wildignore. Useful for other plugins.
+let g:clean_path_wildignore = 1
+```
+
 ## Credit
 
 This plugin was heavily inspired by a [plugin](http://www.vim.org/scripts/script.php?script_id=2557) that sets your `wildignore` based on your `.gitignore`, by Adam Bellaire (I was actually using this before reading the article).
