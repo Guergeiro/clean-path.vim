@@ -98,7 +98,7 @@ function! s:SetPath() abort
         call s:AddDirectoriesToPath(l:findString)
     else
         let l:curDir = getcwd()
-        let l:ignored = s:IgnoreString(l:gitDir)
+        let l:ignored = s:IgnoreString(l:curDir)
         call s:AddIgnoredToWildignore(l:ignored)
 
         let l:findString = "find " . l:curDir . " -maxdepth 1 -type d -not -path " . l:curDir
