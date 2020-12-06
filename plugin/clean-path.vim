@@ -27,14 +27,15 @@ endif
 
 function! s:CleanString(line) abort
     " If line starts with a '/', remove it
-    if a:line =~ '^/'
-        let a:line = substitute(a:line, '/', '', '')
+    let l:output = a:line
+    if l:output =~ '^/'
+        let l:output = substitute(a:line, '/', '', '')
     endif
 
-    if a:line =~ '/$'
-        return  a:line . "*"
+    if l:output =~ '/$'
+        return l:output . "*"
     endif
-    return a:line
+    return l:output
 endfunction
 
 function! s:IgnoreString(dirPath) abort
