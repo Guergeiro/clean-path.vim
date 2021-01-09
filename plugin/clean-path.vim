@@ -1,7 +1,7 @@
-" Maintainer:	Breno Salles <git@brenosalles.com>
-" License:  	MIT License
+" Maintainer: Breno Salles <git@brenosalles.com>
+" License:    MIT License
 "
-"         Copyright (c) 2020 Breno Salles
+"         Copyright (c) 2021 Breno Salles
 "
 "         Permission is hereby granted, free of charge, to any person obtaining a copy
 "         of this software and associated documentation files (the "Software"), to deal

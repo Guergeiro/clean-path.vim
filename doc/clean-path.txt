@@ -1,0 +1,95 @@
+*clean-path.txt*        A clean way of adding directories and files to |path|.
+
+Author:  Breno Salles <https://brenosalles.com>
+URL:     https://github.com/Guergeiro/clean-path.vim
+License: MIT
+
+
+Help on using clean-path                                          *clean-path*
+
+    1. Introduction ............................... |clean-path-intro|
+    2. Installation ............................... |clean-path-installation|
+    3. How it works ............................... |clean-path-works|
+    4. Configuration .............................. |clean-path-configuration|
+    5. Credit ..................................... |clean-path-credit|
+
+==============================================================================
+  1. INTRODUCTION                                           *clean-path-intro*
+
+As said in the article "Off the beaten path" by Romain Lafourcade, the lazy
+way of setting VIM's path may actually harm the performance of common
+commands (|:find|, |:tabfind|, etc), and setting |'wildignore'| to remove some
+large directories (that pesky node_modules comes to mind) doesn't really do
+anything to reduce the performance hit. Quoting from the article,
+"|'wildignore'| is only applied after the search, to build the list of
+candidate for |'wildmenu'|, it is only used for the wildmenu so it is only
+used for the |:find| family of commands."
+
+That being said, instead of using the classic set 'path+=**' hack to allow
+VIM to have it's own "fuzzy finder", this plugin only adds exactly what is
+needed to the path.
+
+==============================================================================
+  2. INSTALATION                                     *clean-path-installation*
+
+Use your favorite plugin manager or dump the files below in their standard
+location:
+
+on Unix-like systems... >
+    ~/.vim/doc/clean-path.txt
+    ~/.vim/plugin/clean-path.vim
+<
+on Windows... >
+    %userprofile%\vimfiles\doc\clean-path.txt
+    %userprofile%\vimfiles\plugin\clean-path.vim
+
+==============================================================================
+  3. HOW IT WORKS                                           *clean-path-works*
+
+1. Find the current git directory.
+2. Read '.gitignore' from root git directory.
+3. Only add files and directories that are not present in '.gitignore'.
+
+Something to keep in mind:
+- If not in a git directory, it'll simply use the current '.gitignore'.
+- If no '.gitignore' is available, it'll populate |'path'| as best as it can,
+  but without using the "hack" '**'.
+- Deeply nested '.gitignore' in a git project are simply ignored.
+- The classic '!' char is ignored (otherwise some heavy logic would be
+  required).
+
+==============================================================================
+  4. CONFIGURATION                                  *clean-path-configuration*
+
+Global mappings:
+
+  g:clean_path_wildignore ........................ |'g:clean_path_wildignore'|
+
+------------------------------------------------------------------------------
+                                                   *'g:clean_path_wildignore'*
+Value: numeric                                                               ~
+Default: 0                                                                   ~
+
+Also populates |'wildignore'| with whatever contents there is in '.gitignore'.
+
+Add the line below to your vimrc to enable this feature: >
+
+    let g:clean_path_wildignore = 1
+<
+
+==============================================================================
+  5. CREDIT                                                *clean-path-credit*
+
+This plugin was heavily inspired by a plugin that sets your |'wildignore'|
+based on your '.gitignore', by Adam Bellaire
+(http://www.vim.org/scripts/script.php?script_id=2557).
+
+Some coding was adapted from the reddit user 'u/kristijanhusak'.
+
+Thanks to Romainl for helping me understanding a bunch about VIM
+(https://gist.github.com/romainl/7e2b425a1706cd85f04a0bd8b3898805).
+
+You can follow the reddit topic that started this plugin here
+(https://old.reddit.com/r/vim/comments/i45hkf/best_way_of_using_path/)
+
+vim:tw=78:ts=8:ft=help:norl:
