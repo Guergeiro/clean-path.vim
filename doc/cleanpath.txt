@@ -17,7 +17,7 @@ Help on using clean-path                                          *clean-path*
   1. INTRODUCTION                                           *clean-path-intro*
 
 As said in the article "Off the beaten path" by Romain Lafourcade, the lazy
-way of setting VIM's path may actually harm the performance of common
+way of setting Vim's path may actually harm the performance of common
 commands (|:find|, |:tabfind|, etc), and setting |'wildignore'| to remove some
 large directories (that pesky node_modules comes to mind) doesn't really do
 anything to reduce the performance hit. Quoting from the article,
@@ -36,12 +36,14 @@ Use your favorite plugin manager or dump the files below in their standard
 location:
 
 on Unix-like systems... >
-    ~/.vim/doc/clean-path.txt
-    ~/.vim/plugin/clean-path.vim
+    ~/.vim/doc/cleanpath.txt
+    ~/.vim/plugin/cleanpath.vim
+    ~/.vim/autoload/cleanpath.vim
 <
 on Windows... >
-    %userprofile%\vimfiles\doc\clean-path.txt
-    %userprofile%\vimfiles\plugin\clean-path.vim
+    %userprofile%\vimfiles\doc\cleanpath.txt
+    %userprofile%\vimfiles\plugin\cleanpath.vim
+    %userprofile%\vimfiles\autoload\cleanpath.vim
 
 ==============================================================================
   3. HOW IT WORKS                                           *clean-path-works*
@@ -61,22 +63,24 @@ Something to keep in mind:
 ==============================================================================
   4. CONFIGURATION                                  *clean-path-configuration*
 
-Global mappings:
+Append to path: >
 
-  g:clean_path_wildignore ........................ |'g:clean_path_wildignore'|
-
-------------------------------------------------------------------------------
-                                                   *'g:clean_path_wildignore'*
-Value: numeric                                                               ~
-Default: 0                                                                   ~
-
-Also populates |'wildignore'| with whatever contents there is in '.gitignore'.
-
-Add the line below to your vimrc to enable this feature: >
-
-    let g:clean_path_wildignore = 1
+    let &path .= cleanpath#setpath()
 <
+Overwrite path: >
 
+    let &path = cleanpath#setpath()
+<
+Optional, but useful
+
+Append to wildignore: >
+
+    let &wildignore .= cleanpath#setwildignore()
+<
+Overwrite wildignore: >
+
+    let &wildignore = cleanpath#setwildignore()
+<
 ==============================================================================
   5. CREDIT                                                *clean-path-credit*
 

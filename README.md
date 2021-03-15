@@ -1,10 +1,10 @@
 # clean-path.vim
 
-A clean way of adding directories and files to VIM's `&path`.
+A clean way of adding directories and files to Vim's `&path`.
 
 ## Rationale
 
-As said in the article ["Off the beaten path"](https://gist.github.com/romainl/7e2b425a1706cd85f04a0bd8b3898805), the lazy way of setting VIM's path may actually harm the performance of common commands (`:find`, `:tabfind`, etc), and setting `wildignore` to remove some large directories (that pesky `node_modules` comes to mind) doesn't really do anything to reduce the performance hit. Quoting from the article, "`&wildignore` is only applied after the search, to build the list of candidate for `:help wildmenu`, it is only used for the wildmenu so it is only used for the `:find` family of commands."
+As said in the article ["Off the beaten path"](https://gist.github.com/romainl/7e2b425a1706cd85f04a0bd8b3898805), the lazy way of setting Vim's path may actually harm the performance of common commands (`:find`, `:tabfind`, etc), and setting `wildignore` to remove some large directories (that pesky `node_modules` comes to mind) doesn't really do anything to reduce the performance hit. Quoting from the article, "`&wildignore` is only applied after the search, to build the list of candidate for `:help wildmenu`, it is only used for the wildmenu so it is only used for the `:find` family of commands."
 
 That being said, instead of using the classic `set path+=**` hack to allow VIM to have it's own "fuzzy finder", this plugin only adds exactly what is needed to the path.
 
@@ -23,44 +23,36 @@ That being said, instead of using the classic `set path+=**` hack to allow VIM t
 
 ## Install
 
-Any plugin manager should work (at least the ones that fetch data from GitHub). Below are a few ways you can do it.
+Use your favorite plugin manager or dump the files below in their standard
+location:
 
-#### VIM's 8+ package manager
-
-In the terminal
-
-```bash
-git clone https://github.com/Guergeiro/clean-path.vim.git ~/.vim/pack/vendor/start/clean-path.vim
+on Unix-like systems...
+```
+    ~/.vim/doc/cleanpath.txt
+    ~/.vim/plugin/cleanpath.vim
+    ~/.vim/autoload/cleanpath.vim
 ```
 
-In your `.vimrc`
-
-```vim
-packloadall
+on Windows...
+```
+    %userprofile%\vimfiles\doc\cleanpath.txt
+    %userprofile%\vimfiles\plugin\cleanpath.vim
+    %userprofile%\vimfiles\autoload\cleanpath.vim
 ```
 
-#### [Vundle.vim](https://github.com/VundleVim/Vundle.vim)
+## How to use
 
 ```vim
-call vundle#begin('~/.vim/plugged')
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'Guergeiro/clean-path.vim'
-call vundle#end()
-```
+" Append to path
+let &path .= cleanpath#setpath()
+" Overwrite path
+let &path = cleanpath#setpath()
 
-#### [vim-plug](https://github.com/junegunn/vim-plug)
-
-```vim
-call plug#begin('~/.vim/plugged')
-Plug 'Guergeiro/clean-path.vim'
-call plug#end()
-```
-
-## Available Configurations
-
-```vim
-" Automatically adds the .gitginore to &wildignore. Useful for other plugins.
-let g:clean_path_wildignore = 1
+" Optional function, but useful for other plugins
+" Append to wildignore
+let &wildignore .= cleanpath#setwildignore()
+" Overwrite wildignore
+let &wildignore = cleanpath#setwildignore()
 ```
 
 ## Credit
