@@ -7,8 +7,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-if !exists('*s:CleanString')
-  function! s:CleanString(line) abort
+function! cleanpath#cleanstring(line) abort
     " If line starts with a '/', remove it
     let l:output = a:line
     if l:output =~ '^/'
@@ -19,8 +18,7 @@ if !exists('*s:CleanString')
       return l:output . '*'
     endif
     return l:output
-  endfunction
-endif
+endfunction
 
 function! cleanpath#wildignore(path) abort
     let l:gitignore = a:path . '/.gitignore'
@@ -37,7 +35,7 @@ function! cleanpath#wildignore(path) abort
       if line =~ '^!'   | con | endif
       if line =~ '^\s$' | con | endif
 
-      let l:igstring .= ',' . a:path . '/' . s:CleanString(l:line)
+      let l:igstring .= ',' . a:path . '/' . cleanpath#cleanstring(l:line)
     endfor
 
     return substitute(l:igstring, '^,', '', 'g')
@@ -53,7 +51,10 @@ function! cleanpath#getcwd() abort
 endfunction
 
 function cleanpath#getdirectories(path) abort
-  let l:findString = 'find ' . a:path . ' -maxdepth 1 -type d -not -path ' . a:path
+  let l:findString = 'find ' .
+        \ a:path .
+        \ ' -maxdepth 1 -type d -not -path ' .
+        \ a:path
   return systemlist(l:findString)
 endfunction
 
