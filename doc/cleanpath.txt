@@ -80,7 +80,14 @@ Append to wildignore: >
 Overwrite wildignore: >
 
     let &wildignore = cleanpath#setwildignore()
-<
+
+------------------------------------------------------------------------------
+In the following section, `1` signifies `on` and `0` signifies `off`.
+
+* *g:cleanpath_max_depth
+Specify max depth for directories search >
+    let g:cleanpath_max_depth = 1
+
 ==============================================================================
   5. CREDIT                                                *clean-path-credit*
 

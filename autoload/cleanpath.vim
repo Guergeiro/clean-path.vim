@@ -51,9 +51,11 @@ function! cleanpath#getcwd() abort
 endfunction
 
 function cleanpath#getdirectories(path) abort
+  let l:max_depth = get(g:, 'cleanpath_max_depth', 1)
   let l:findString = 'find ' .
         \ a:path .
-        \ ' -maxdepth 1 -type d -not -path ' .
+        \ ' -maxdepth ' . l:max_depth .
+        \ ' -type d -not -path ' .
         \ a:path
   return systemlist(l:findString)
 endfunction
