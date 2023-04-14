@@ -53,6 +53,9 @@ let &path = cleanpath#setpath()
 let &wildignore .= cleanpath#setwildignore()
 " Overwrite wildignore
 let &wildignore = cleanpath#setwildignore()
+
+" Specify max depth for directories search
+let g:cleanpath_max_depth = 1
 ```
 
 ## Credit
